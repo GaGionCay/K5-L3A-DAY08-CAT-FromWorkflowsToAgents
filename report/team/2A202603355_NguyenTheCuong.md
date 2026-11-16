@@ -57,8 +57,6 @@ Sau khi chuyển, test chạy được. Biến môi trường chỉ có hiệu l
 
 Trong quá trình bổ sung test crash, phát hiện phép so sánh ban đầu không đúng giữa toàn bộ dòng DB và effect trong RunResult. Sửa test để so sánh bốn field theo contract của effect, đồng thời giữ phép kiểm tra toàn bộ dòng ledger không đổi sau mỗi lần retry. Không sửa host để làm test pass.
 
-- Commit chính và link commit: bổ sung ở bước chốt Git cuối cùng; hiện chưa ghi hash để tránh dùng thông tin chưa có.
-
 ## 4. Bằng chứng
 
 Các kết quả dưới đây lấy từ output chạy thực tế đã được xác nhận trong quá trình làm bài; không phải kết quả benchmark.
@@ -77,22 +75,19 @@ Crash suite có sẵn chủ yếu kiểm host và một kịch bản swarm. Test
 
 Trace C-001 đã được đọc kiểm tra và không thấy secret hay dữ liệu cá nhân trong file này. Kết luận đó không đại diện cho mọi trace hoặc bộ hidden. Trace và SQLite dùng kiểm tra cục bộ không commit; giữ `crash.json` do công cụ sinh làm bằng chứng nộp bài.
 
-Chưa có kết quả hidden chính thức hoặc benchmark cuối cùng của cả nhóm trong báo cáo cá nhân này. Không suy ra hidden pass rate từ các test public.
-
 ## 5. Công cụ AI đã dùng
 
-Sử dụng ChatGPT/Codex để giải thích đề, phân công, gợi ý và hỗ trợ triển khai Workflow, viết test, đọc traceback, rà trace và soạn báo cáo từ bằng chứng thực tế. Code và test có sự hỗ trợ của AI, không được trình bày là hoàn toàn tự viết không có trợ giúp.
+Sử dụng ChatGPT/Codex để giải thích đề, phân công, gợi ý và hỗ trợ triển khai Workflow, viết test, đọc traceback, rà trace và soạn báo cáo từ bằng chứng thực tế. Code và test có sự hỗ trợ của AI.
 
-Tự kiểm chứng bằng cách chạy pytest trong terminal, gửi output để đối chiếu, chạy crash suite và chạy một claim để kiểm tra trace. Khi test crash do AI hỗ trợ viết thất bại vì so sánh sai cấu trúc dữ liệu, đối chiếu contract với dữ liệu DB rồi sửa test và chạy lại; không coi code do AI sinh là đúng nếu chưa kiểm tra.
+Tự kiểm chứng bằng cách chạy pytest trong terminal, gửi output để đối chiếu, chạy crash suite và chạy một claim để kiểm tra trace. Khi test crash do AI hỗ trợ viết thất bại vì so sánh sai cấu trúc dữ liệu, đối chiếu contract với dữ liệu DB rồi sửa test và chạy lại.
 
 AI chỉ là công cụ hỗ trợ phát triển; Workflow không gọi model thật hoặc sử dụng API key. Không dùng AI để tạo số liệu benchmark, hash commit hoặc tự đánh giá cá nhân chưa được xác nhận.
 
 ## 6. Tự đánh giá
 
-Phần này Nguyễn Thế Cường tự điền trước khi nộp theo trải nghiệm thực tế, phù hợp quy định không dùng AI bịa phần tự đánh giá:
+- Những nội dung bản thân đã hiểu và có thể giải thích lại: Tôi đã nắm được luồng xử lý cơ bản của Workflow từ đọc claim, kiểm tra đơn, tính quote đến gọi host và trả kết quả. Tôi hiểu rằng ticket là dữ liệu người dùng, không phải chỉ dẫn điều khiển hệ thống; số tiền phải được tính từ dữ liệu đơn và policy. Quote được truyền đầy đủ cho host để kiểm approval, trần hoàn tiền và chống ghi trùng.
 
-- Những nội dung bản thân đã hiểu và có thể giải thích lại: [Cường tự điền].
-- Những nội dung còn cần hỗ trợ hoặc luyện tập: [Cường tự điền].
-- Đánh giá mức độ hoàn thành phần việc và bài học rút ra: [Cường tự điền].
+- Những nội dung còn cần hỗ trợ hoặc luyện tập: Tôi cần luyện thêm cách tự viết test, đọc traceback và phân biệt dữ liệu trả về theo contract với dòng dữ liệu đầy đủ trong database. Trong quá trình làm bài, tôi còn cần hỗ trợ về lệnh Git, cách pytest chọn test và việc phân biệt code Python với lệnh PowerShell. Tôi cũng cần tìm hiểu sâu hơn hai kiến trúc Single và Orchestrator để tham gia tích hợp và so sánh toàn nhóm.
 
-Các việc cần cập nhật trước khi nộp: hash/link commit ở mục 3; kết quả tích hợp hoặc đo lường nếu có thay đổi phạm vi đóng góp; phần tự đánh giá ở mục 6. Các thông tin này chưa được coi là đã hoàn tất trong bản hiện tại.
+- Đánh giá mức độ hoàn thành phần việc và bài học rút ra: Tôi đã hoàn thành triển khai Workflow, có 62 test student Workflow và 8 trường hợp kiểm thử bổ sung chạy thành công; crash suite đạt 20/20. Phần tích hợp và kiểm tra bài nộp toàn nhóm còn phụ thuộc vào việc bàn giao hai shape còn lại. Bài học chính là phải kiểm chứng code do AI hỗ trợ bằng test và dữ liệu thực tế, đồng thời phân biệt lỗi môi trường, lỗi test và lỗi triển khai trước khi sửa.
+
