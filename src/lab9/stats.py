@@ -8,6 +8,7 @@ Reference values to self-check are in tests/test_lab9_stats.py.
 from __future__ import annotations
 
 from collections.abc import Sequence
+from math import comb
 
 POS = "FAIL"   # the judge's job is to FIND failures, so FAIL is the positive class
 
@@ -41,20 +42,48 @@ def paired_bootstrap(a: Sequence[float], b: Sequence[float], *, n_resamples: int
     """a[i], b[i] = per-item mean over seeds, SAME items, SAME order.
     Return (mean(a)-mean(b), lo, hi) with scipy.stats.bootstrap(paired=True, method="percentile",
     rng=numpy.random.default_rng(rng)). If a == b everywhere return (0.0, 0.0, 0.0)."""
-    # TODO M4
-    raise NotImplementedError
+    import numpy as np
+    from scipy.stats import bootstrap
+
+    if len(a) != len(b) or not a:
+        raise ValueError("paired samples must have the same non-zero length")
+    if n_resamples < 1:
+        raise ValueError("n_resamples must be positive")
+    if not 0 < confidence < 1:
+        raise ValueError("confidence must be between 0 and 1")
+    if all(x == y for x, y in zip(a, b)):
+        return 0.0, 0.0, 0.0
+
+    def mean_difference(x, y, axis=-1):
+        return np.mean(x - y, axis=axis)
+
+    result = bootstrap(
+        (np.asarray(a, dtype=float), np.asarray(b, dtype=float)),
+        mean_difference,
+        paired=True,
+        vectorized=True,
+        n_resamples=n_resamples,
+        confidence_level=confidence,
+        method="percentile",
+        rng=np.random.default_rng(rng),
+    )
+    observed = np.mean(np.asarray(a, dtype=float)) - np.mean(np.asarray(b, dtype=float))
+    return float(observed), float(result.confidence_interval.low), float(result.confidence_interval.high)
 
 
 def pass_at_k(n: int, c: int, k: int) -> float:
     """Probability that AT LEAST ONE of k trials drawn from n (c of them passing) passes.
     Unbiased estimator (Chen et al. 2021): 1 - C(n-c, k) / C(n, k). Raise ValueError if k > n."""
-    # TODO M6
-    raise NotImplementedError
+    if not all(isinstance(value, int) for value in (n, c, k)) or n < 0 or c < 0 or c > n or k < 1 or k > n:
+        raise ValueError("require integers with 0 <= c <= n and 1 <= k <= n")
+    failures = n - c
+    return 1.0 - (comb(failures, k) / comb(n, k) if k <= failures else 0.0)
 
 
 def pass_hat_k(n: int, c: int, k: int) -> float:
     """pass^k (tau-bench, Yao et al. 2024): probability that ALL k trials drawn from n pass.
     Unbiased estimator: C(c, k) / C(n, k). Raise ValueError if k > n.
     pass^k <= pass@1 <= pass@k; a reliable agent keeps pass^k close to pass@1."""
-    # TODO M6
-    raise NotImplementedError
+    if not all(isinstance(value, int) for value in (n, c, k)) or n < 0 or c < 0 or c > n or k < 1 or k > n:
+        raise ValueError("require integers with 0 <= c <= n and 1 <= k <= n")
+    return comb(c, k) / comb(n, k) if k <= c else 0.0
