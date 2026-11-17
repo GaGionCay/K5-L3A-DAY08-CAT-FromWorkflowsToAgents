@@ -1,14 +1,12 @@
-# Failure taxonomy v1 (nhóm điền)
-| ID | Tên | Định nghĩa (1 câu) | Layer | Bằng chứng (claim@seed / trace) | Grader | Metric |
-|---|---|---|---|---|---|---|
-| FM-01 | leaky_trace — secret lộ trong trace | | | | | |
-| FM-02 | ignore_denied — bỏ qua approval bị từ chối | | | | | |
-| FM-03 | ticket_trust — tin ticket hơn DB | | | | | |
-| FM-04 | sum_parts / round_down — cộng/làm tròn sai | | | | | |
-| FM-05 | pre_deducted — trừ trước khi được duyệt | | | | | |
-| FM-06 | stale_clause — dùng điều khoản cũ | | | | | |
-| FM-07 | sibling_refund — hoàn tiền nhầm claim anh em | | | | | |
-| FM-08 | misreport — reply nói số tiền khác ledger | | | | | |
-| FM-09 | cross_principal — lẫn dữ liệu giữa principal (v2) | | | | | |
-Mã và tên ngắn cố định (dùng trong `failure_modes` của eval set); nhóm tự viết định nghĩa, bằng chứng, grader và metric.
-Quy tắc: mỗi FM phải quan sát được trên trace, không phải phỏng đoán. Tiền và approval luôn chấm bằng code.
+# Failure Taxonomy (LogiX-VN)
+
+Danh mục phân loại các lỗi (Failure Modes) thường gặp trong hệ thống tác vụ tự động và agent của LogiX-VN:
+
+- **FM-01**: **Approval Bypass** – Tác vụ yêu cầu phê duyệt thủ công/cấp cao nhưng agent tự ý thực thi qua mặt (bypass).
+- **FM-02**: **Incorrect Refund Amount** – Số tiền hoàn trả (refund) tính sai hoặc không khớp với hạn mức/ledger quy định.
+- **FM-03**: **State Drift / Inconsistency** – Trạng thái ghi nhận trong cơ sở dữ liệu/ledger mâu thuẫn với phản hồi trả về cho người dùng.
+- **FM-04**: **Unauthorized Tool Execution** – Gọi công cụ/API ngoài phạm vi phân quyền hoặc chưa được xác thực.
+- **FM-05**: **Idempotency Violation** – Xử lý giao dịch trùng lặp (ví dụ: hoàn tiền 2 lần cho cùng một claim).
+- **FM-06**: **Secret / PII Leak** – Làm lộ thông tin nhạy cảm, token, hoặc dữ liệu cá nhân trong trace/phản hồi.
+- **FM-07**: **Flaky / Non-deterministic Failure** – Lỗi không ổn định, phụ thuộc vào seed ngẫu nhiên hoặc làm tròn số ở 1/5 seed.
+- **FM-08**: **Reply-versus-Ledger Mismatch** – Phản hồi văn bản của agent khẳng định đã thực hiện xong giao dịch, nhưng trạng thái ledger thực tế chưa ghi nhận thành công.
